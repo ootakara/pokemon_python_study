@@ -1,0 +1,2 @@
+# pokemon_python_study
+自分のpythonの勉強のため
