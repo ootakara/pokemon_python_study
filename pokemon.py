@@ -7,7 +7,32 @@ class Pokemon:
         return self.realNumberCalculation(select_level, select_pokemon)
     
     def enemyPokemon(self, select_level):
-        select_pokemon = random.randint(1, 3)
+        # select_pokemon_id = random.randint(1, 7)
+        select_pokemon_id = random.choice([1, 4, 7])
+
+        conn = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='password',
+            database='pokemon_db'
+        )
+        cursor = conn.cursor(dictionary=True)
+
+        sql_query = f'''
+        SELECT *
+        FROM pokemon
+        WHERE
+            id = {select_pokemon_id}
+        '''
+
+        # SQLクエリを実行する
+        cursor.execute(sql_query)
+
+        # 結果を取得する
+        result = cursor.fetchone()
+
+        select_pokemon = result['name']
+
         return self.realNumberCalculation(select_level, select_pokemon)
 
     # 実数値計算
@@ -43,7 +68,7 @@ class Pokemon:
         SELECT *
         FROM pokemon
         WHERE
-            name = {select_pokemon}
+            name = '{select_pokemon}'
         '''
 
         # SQLクエリを実行する
@@ -70,7 +95,7 @@ class Pokemon:
                 OR t1.technique_id_3 = t3.id
                 OR t1.technique_id_4 = t3.id
         WHERE
-            t1.name = {select_pokemon}
+            t1.name = '{select_pokemon}'
         '''
 
         # SQLクエリを実行する
@@ -118,9 +143,7 @@ class Pokemon:
             'speed' : speed
         }
 
-        pokemon_status = {
-            'technique': {}
-        }
+        pokemon_status['technique'] = [] 
         for technique in techniques :
             pokemon_status['technique'].append({
                 'technique_name' : technique['technique_name'],
@@ -129,6 +152,9 @@ class Pokemon:
                 'technique_type' : technique['technique_type'],
                 'technique_power' : technique['technique_power']
             })
+        pokemon_status['technique'].append({
+            'technique_name' : 'もどる'
+        })
         
         pokemon_status['for_battle'] = {
             'buttle_hp' : hp, 
@@ -136,6 +162,12 @@ class Pokemon:
             'buttle_defense' : defense, 
             'buttle_special_attack' : special_attack, 
             'buttle_speed' : speed,
+            'buttle_attack_condition' : 0, 
+            'buttle_defense_condition' : 0, 
+            'buttle_special_attack_condition' : 0, 
+            'buttle_speed_condition' : 0,
+            'buttle_accuracy_condition' : 0, # 命中率管理
+            'buttle_avoidance_condition' : 0, # 回避率管理
             'abnormal_status' : False, # 状態異常管理
             'confusion' : False, # 混乱管理
             'love_love' : False  # メロメロ管理

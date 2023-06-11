@@ -6,18 +6,18 @@ class Opening:
         curses.curs_set(0)
 
         selected_index = 0
-        levels = ["Lv.5", "Lv.50", "Lv.100"]
+        levels = [5, 50, 100]
 
         while True:
             stdscr.clear()
-            stdscr.addstr("ようこそ！！\n")
-            stdscr.addstr("どのレベルに挑戦しますか？\n")
+            stdscr.addstr("\n　ようこそ！！\n\n")
+            stdscr.addstr("　どのレベルに挑戦しますか？\n\n")
 
             for i, level in enumerate(levels):
                 if i == selected_index:
-                    stdscr.addstr(f"> {level}\n")
+                    stdscr.addstr(f"　> Lv.{level}\n")
                 else:
-                    stdscr.addstr(f"  {level}\n")
+                    stdscr.addstr(f"　  Lv.{level}\n")
 
             key = None
             while key not in [curses.KEY_UP, curses.KEY_DOWN, ord('\n')]:
@@ -45,13 +45,13 @@ class Opening:
 
         while True:
             stdscr.clear()
-            stdscr.addstr("ポケモンを1匹選んでください\n")
+            stdscr.addstr("\n　ポケモンを1匹選んでください\n\n")
 
             for i, pokemon in enumerate(pokemons):
                 if i == selected_index:
-                    stdscr.addstr(f"> {pokemon}\n")
+                    stdscr.addstr(f"　> {pokemon}\n")
                 else:
-                    stdscr.addstr(f"  {pokemon}\n")
+                    stdscr.addstr(f"　  {pokemon}\n")
 
             key = None
             while key not in [curses.KEY_UP, curses.KEY_DOWN, ord('\n')]:
@@ -69,6 +69,3 @@ class Opening:
             stdscr.refresh()
 
         return select_pokemon
-
-# print("選択されたレベル:", selected_level)
-# print("選択されたポケモン:", selected_pokemon)
