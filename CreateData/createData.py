@@ -78,6 +78,23 @@ try:
 
 except mysql.connector.Error as error:
     print(f"テーブル {table_name} の削除中にエラーが発生しました:", error)
+
+try:
+    # 削除するテーブル名
+    table_name = 'type_compatibility'
+
+    # テーブルを削除するクエリを作成
+    drop_table_query = f"DROP TABLE IF EXISTS {table_name}"
+
+    # クエリを実行
+    cursor.execute(drop_table_query)
+    conn.commit()
+
+    print(f"テーブル {table_name} を削除しました！")
+    print('------------------------------------------')
+
+except mysql.connector.Error as error:
+    print(f"テーブル {table_name} の削除中にエラーが発生しました:", error)
     
 
 
@@ -237,6 +254,64 @@ try:
 
 except mysql.connector.Error as error:
     print("ポケモンと技の関係のデータを登録中にエラーが発生しました！:", error)
+
+
+# タイプ相性表
+try:
+    # テーブルの作成
+    create_type_effectiveness_table_query = '''
+    CREATE TABLE IF NOT EXISTS type_compatibility (
+        id INT PRIMARY KEY AUTO_INCREMENT,
+        attacking_type VARCHAR(255),
+        outstanding_defending_types VARCHAR(255),
+        not_good_enough_defending_types VARCHAR(255),
+        no_effect_defending_types VARCHAR(255)
+    )
+    '''
+    cursor.execute(create_type_effectiveness_table_query)
+    conn.commit()
+
+    print('ポケモンのタイプ相性テーブルを作成しました！')
+
+except mysql.connector.Error as error:
+    print("ポケモンのタイプ相性テーブル作成中にエラーが発生しました:", error)
+
+
+# タイプ相性のデータを登録
+try:
+    # タイプ相性のデータ
+    type_effectiveness_data = [
+        {'attacking_type': 'エスパー', 'outstanding_defending_types': 'かくとう,どく', 'not_good_enough_defending_types': 'エスパー,はがね', 'no_effect_defending_types': 'あく'},
+        {'attacking_type': 'むし', 'outstanding_defending_types': 'くさ,エスパー,あく', 'not_good_enough_defending_types': 'ほのお,かくとう,どく,ひこう,ゴースト,はがね,フェアリー', 'no_effect_defending_types': ''},
+        {'attacking_type': 'いわ', 'outstanding_defending_types': 'ほのお,こおり,ひこう,むし', 'not_good_enough_defending_types': 'かくとう,じめん,はがね', 'no_effect_defending_types': ''},
+        {'attacking_type': 'ゴースト', 'outstanding_defending_types': 'エスパー,ゴースト', 'not_good_enough_defending_types': 'あく', 'no_effect_defending_types': 'ノーマル'},
+        {'attacking_type': 'ドラゴン', 'outstanding_defending_types': 'ドラゴン', 'not_good_enough_defending_types': 'はがね', 'no_effect_defending_types': 'フェアリー'},
+        {'attacking_type': 'あく', 'outstanding_defending_types': 'エスパー,ゴースト', 'not_good_enough_defending_types': 'かくとう,あく,フェアリー', 'no_effect_defending_types': ''},
+        {'attacking_type': 'はがね', 'outstanding_defending_types': 'こおり,いわ,フェアリー', 'not_good_enough_defending_types': 'ほのお,みず,でんき,はがね', 'no_effect_defending_types': ''},
+        {'attacking_type': 'フェアリー', 'outstanding_defending_types': 'かくとう,ドラゴン,あく', 'not_good_enough_defending_types': 'ほのお,どく,はがね', 'no_effect_defending_types': ''},
+        {'attacking_type': 'ノーマル', 'outstanding_defending_types': '', 'not_good_enough_defending_types': 'いわ,はがね', 'no_effect_defending_types': 'ゴースト'},
+        {'attacking_type': 'ほのお', 'outstanding_defending_types': 'くさ,こおり,むし,はがね', 'not_good_enough_defending_types': 'ほのお,みず,いわ,ドラゴン', 'no_effect_defending_types': ''},
+        {'attacking_type': 'みず', 'outstanding_defending_types': 'ほのお,じめん,いわ', 'not_good_enough_defending_types': 'みず,くさ,ドラゴン', 'no_effect_defending_types': ''},
+        {'attacking_type': 'でんき', 'outstanding_defending_types': 'みず,ひこう', 'not_good_enough_defending_types': 'でんき,くさ,ドラゴン', 'no_effect_defending_types': 'じめん'},
+        {'attacking_type': 'くさ', 'outstanding_defending_types': 'みず,じめん,いわ', 'not_good_enough_defending_types': 'ほのお,くさ,どく,ひこう,むし,ドラゴン,はがね', 'no_effect_defending_types': ''},
+        {'attacking_type': 'こおり', 'outstanding_defending_types': 'くさ,じめん,ひこう,ドラゴン', 'not_good_enough_defending_types': 'ほのお,みず,こおり,はがね', 'no_effect_defending_types': ''},
+        {'attacking_type': 'かくとう', 'outstanding_defending_types': 'ノーマル,こおり,いわ,はがね', 'not_good_enough_defending_types': 'どく,ひこう,エスパー,むし,フェアリー', 'no_effect_defending_types': 'ゴースト'},
+        {'attacking_type': 'どく', 'outstanding_defending_types': 'くさ,フェアリー', 'not_good_enough_defending_types': 'どく,じめん,いわ,ゴースト', 'no_effect_defending_types': 'はがね'},
+        {'attacking_type': 'じめん', 'outstanding_defending_types': 'ほのお,でんき,どく,いわ,はがね', 'not_good_enough_defending_types': 'くさ,むし', 'no_effect_defending_types': 'ひこう'},
+        {'attacking_type': 'ひこう', 'outstanding_defending_types': 'くさ,かくとう,むし', 'not_good_enough_defending_types': 'でんき,いわ,はがね', 'no_effect_defending_types': ''},
+    ]
+
+    # データの挿入
+    insert_query = "INSERT INTO type_compatibility (attacking_type, outstanding_defending_types, not_good_enough_defending_types, no_effect_defending_types) VALUES (%(attacking_type)s, %(outstanding_defending_types)s, %(not_good_enough_defending_types)s, %(no_effect_defending_types)s)"
+    cursor.executemany(insert_query, type_effectiveness_data)
+    conn.commit()
+
+    print("ポケモンのタイプ相性データを登録しました！")
+    print('------------------------------------------')
+
+except mysql.connector.Error as error:
+    print("ポケモンのタイプ相性データ登録中にエラーが発生しました:", error)
+
 
     
 # カーソルと接続をクローズ

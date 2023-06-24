@@ -1,24 +1,23 @@
 import curses
 
 from opening import Opening
-from pokemon import Pokemon
+from settingPokemon import SettingPokemon
 from battle import Battle
 
 class Main:
+    def __init__(self):
+        self.opening = Opening()
+        self.settingPokemon = SettingPokemon()
+        self.battle = Battle()
+
     def run(self):
-        opening = Opening()
-        selected_level = curses.wrapper(opening.selectLevel)
-        selected_pokemon = curses.wrapper(opening.selectPokemon)
+        selected_level = curses.wrapper(self.opening.selectLevel)
+        selected_pokemon = curses.wrapper(self.opening.selectPokemon)
 
-        pokemon = Pokemon()
-        my_pokemon = pokemon.myPokemon(selected_level, selected_pokemon)
-        enemy_pokemon = pokemon.enemyPokemon(selected_level)
+        my_pokemon = self.settingPokemon.myPokemon(selected_level, selected_pokemon)
+        enemy_pokemon = self.settingPokemon.enemyPokemon(selected_level)
 
-        print(enemy_pokemon)
-
-        battle = Battle()
-        curses.wrapper(battle.battle, my_pokemon, enemy_pokemon)
-
+        curses.wrapper(self.battle.battle, my_pokemon, enemy_pokemon)
 
 if __name__ == "__main__":
     main = Main()
